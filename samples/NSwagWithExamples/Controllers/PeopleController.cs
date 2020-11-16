@@ -4,23 +4,24 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using NSwagWithExamples.Models;
+using NSwag.Annotations;
 
 namespace NSwagWithExamples.Controllers
 {
     [ApiController, Route("api/v1/people")]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(CustomInternalError))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, typeof(CustomInternalError))]
     public class PeopleController : ControllerBase
     {
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<Person>))]
+        [SwaggerResponse(StatusCodes.Status200OK, typeof(List<Person>), Description = "This response contains a list of all the persons")]
         public async Task<IActionResult> GetPeople()
         {
             return Ok(new List<Person>());
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Person))]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(CustomInternalErrorOnMethodLevel))]
+        [SwaggerResponse(StatusCodes.Status200OK, typeof(Person))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, typeof(CustomInternalErrorOnMethodLevel))]
         public async Task<IActionResult> GetPerson([FromRoute]int id)
         {
             return Ok(new Person());

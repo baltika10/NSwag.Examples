@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSwag.Generation.Processors;
 using NSwag.Generation.Processors.Contexts;
+using NSwag.Annotations;
 
 namespace NSwag.Examples
 {
@@ -36,26 +37,26 @@ namespace NSwag.Examples
                     continue;
                 }
 
-                var attributesWithSameKey = GetAttributesWithSameStatusCode(context.MethodInfo, responseStatusCode);
+                var attributesWithSameKey = GetAttributesWithSameStatusCode(context.MethodInfo, response.Key);
 
                 if (!attributesWithSameKey.Any())
                 {
                     //get attributes from controller, in case when no attribute on action was found
-                    attributesWithSameKey = GetAttributesWithSameStatusCode(context.MethodInfo.DeclaringType, responseStatusCode);
+                    attributesWithSameKey = GetAttributesWithSameStatusCode(context.MethodInfo.DeclaringType, response.Key);
                 }
 
                 if (attributesWithSameKey.Count > 1)
-                    logger.LogWarning($"Multiple {nameof(ProducesResponseTypeAttribute)} defined for method {context.MethodInfo.Name}, selecting first.");
+                    logger.LogWarning($"Multiple {nameof(SwaggerResponseAttribute)} defined for method {context.MethodInfo.Name}, selecting first.");
                 response.Value.Examples = exampleProvider.GetProviderValue(attributesWithSameKey.FirstOrDefault()?.Type);
             }
 
             return true;
         }
 
-        private List<ProducesResponseTypeAttribute> GetAttributesWithSameStatusCode(MemberInfo memberInfo, int responseStatusCode)
+        private List<SwaggerResponseAttribute> GetAttributesWithSameStatusCode(MemberInfo memberInfo, string responseStatusCode)
         {
             return memberInfo
-                    .GetCustomAttributes<ProducesResponseTypeAttribute>(true)
+                    .GetCustomAttributes<SwaggerResponseAttribute>(true)
                     .Where(x => x.StatusCode == responseStatusCode)
                     .ToList();
         }
